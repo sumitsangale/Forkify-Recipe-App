@@ -29,7 +29,7 @@ const createRecipeObject = function(data){
 
 export const loadRecipe = async function(id){
   try{
-    const data = await getJSON(`${API_URL}${id}`)
+    const data = await getJSON(`${API_URL}${id}?key=${KEY}`)
     state.recipe = createRecipeObject(data);
 
     if(state.bookmarks.some(bookmark => bookmark.id === id)){
@@ -46,14 +46,15 @@ export const loadRecipe = async function(id){
 
 export const loadSearchResult = async function(query){
   try{
-    const data = await getJSON(`${API_URL}?search=${query}`);
+    const data = await getJSON(`${API_URL}?search=${query}&key=${KEY}`);
     
     state.search.results = data.data.recipes.map(rec=>{
       return {
         id: rec.id,
         imageUrl: rec.image_url,
         publisher: rec.publisher,
-        title: rec.title
+        title: rec.title,
+        ...(rec.key && {key: rec.key})
       }
     })
     state.search.page = 1;
