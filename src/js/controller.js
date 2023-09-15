@@ -2,6 +2,7 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import * as model from './model';
+import {MODAL_CLOSE_SEC} from './config';
 import recipeView from './views/recipeView';
 import searchView from './views/searchView';
 import resultsView from './views/resultsView';
@@ -93,8 +94,29 @@ const controlBookmarks = function(){
   bookmarksView.render(model.state.bookmarks);
 }
 
-const controlAddRecipe = function(newRecipe){
-  console.log(newRecipe);
+const controlAddRecipe = async function(newRecipe){
+  try{
+    //show spinner
+    addRecipeView.renderSpinner();
+
+    //upload new recipe
+    await model.uploadRecipe(newRecipe);
+
+    //render recipe
+    recipeView.render(model.state.recipe);
+
+    //success message
+    addRecipeView.renderSuccessMessage();
+
+    //close form window
+    setTimeout(function(){
+      addRecipeView.toggleWindow();
+    }, MODAL_CLOSE_SEC * 1000)
+    
+  }catch(err){
+    console.log(err);
+    addRecipeView.renderError(err.message);
+  }
 }
 
 const init = function(){
